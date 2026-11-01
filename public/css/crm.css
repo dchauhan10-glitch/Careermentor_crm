@@ -1,0 +1,36 @@
+/* CareerMentors CRM - plain stylesheet, no build step needed */
+:root{--ink:#1d2433;--muted:#5f6b7a;--line:#dfe3ea;--bg:#f5f7fa;--card:#fff;--brand:#1f5fbf;--brand-ink:#fff;--hot:#c62828;--warm:#e08a00;--cold:#2e7d9a;--ok:#2e7d32;--bad:#b3261e;--radius:8px}
+*{box-sizing:border-box}body{margin:0;font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+a{color:var(--brand);text-decoration:none}a:hover{text-decoration:underline}
+.top{background:#13294b;color:#fff;display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;padding:10px 20px}
+.top a{color:#dbe6ff;font-weight:500}.top a.on{color:#fff;border-bottom:2px solid #fff}
+.top .brand{font-weight:700;color:#fff;margin-right:8px}.top form.search{margin-left:auto;display:flex;gap:6px}
+.top input{padding:6px 10px;border-radius:6px;border:0;min-width:180px}.top .who{font-size:13px;color:#b9c6e0}
+main{max-width:1240px;margin:0 auto;padding:20px}
+h1{font-size:22px;margin:0 0 14px}h2{font-size:17px;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:16px}
+.grid{display:grid;gap:16px}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.side{grid-template-columns:1.5fr 1fr}
+@media(max-width:900px){.g2,.g3,.side{grid-template-columns:1fr}.top form.search{margin-left:0;width:100%}.top input{flex:1}}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px}.tile b{display:block;font-size:26px}.tile span{color:var(--muted);font-size:13px}
+.tile.alert b{color:var(--bad)}
+table{width:100%;border-collapse:collapse;background:var(--card)}th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:13px;color:var(--muted);font-weight:600;background:#fafbfc}tr:hover td{background:#fafcff}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius)}
+label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:8px 0 4px}
+input,select,textarea{width:100%;padding:8px 10px;border:1px solid #c9d0db;border-radius:6px;font:inherit;background:#fff}
+textarea{min-height:64px}.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:150px}
+.btn{display:inline-block;padding:8px 14px;border-radius:6px;border:1px solid var(--brand);background:var(--brand);color:var(--brand-ink);font:inherit;font-weight:600;cursor:pointer}
+.btn.light{background:#fff;color:var(--brand)}.btn.danger{background:#fff;color:var(--bad);border-color:var(--bad)}.btn.small{padding:4px 10px;font-size:13px}
+.flash{background:#e8f5e9;border:1px solid #b7dfb9;color:#1b5e20;padding:10px 14px;border-radius:6px;margin-bottom:14px}
+.errors{background:#fdecea;border:1px solid #f5c2bd;color:var(--bad);padding:10px 14px;border-radius:6px;margin-bottom:14px}
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;background:#eef1f6;color:#334}
+.p-hot{background:#fdecea;color:var(--hot)}.p-warm{background:#fff4e0;color:#8a5300}.p-cold{background:#e4f2f7;color:var(--cold)}
+.muted{color:var(--muted)}.small{font-size:13px}.due{color:var(--bad);font-weight:600}
+.timeline{list-style:none;margin:0;padding:0}.timeline li{border-left:3px solid var(--brand);padding:6px 0 10px 12px;margin-left:4px}
+.timeline li.corr{border-left-color:var(--warm)}.timeline .meta{font-size:13px;color:var(--muted)}
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}.tabs a{padding:6px 12px;border-radius:6px;background:#fff;border:1px solid var(--line)}.tabs a.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.pagination{margin-top:12px}.pagination nav{display:flex;gap:4px;flex-wrap:wrap}
+.login{max-width:380px;margin:60px auto}
+dl.facts{display:grid;grid-template-columns:150px 1fr;gap:4px 10px;margin:0}dl.facts dt{color:var(--muted);font-size:13px}dl.facts dd{margin:0}
+details summary{cursor:pointer;color:var(--brand);font-weight:600}
