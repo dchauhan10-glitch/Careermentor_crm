@@ -17,6 +17,10 @@
   @can('admin')
     <a href="{{ route('admin.users') }}" @class(['on' => request()->routeIs('admin.users')])>Staff &amp; teams</a>
     <a href="{{ route('admin.duplicates') }}" @class(['on' => request()->routeIs('admin.duplicates')])>Duplicates</a>
+    <a href="{{ route('admin.imports.index') }}" @class(['on' => request()->routeIs('admin.imports.*')])>Import</a>
+    <a href="{{ route('admin.websites') }}" @class(['on' => request()->routeIs('admin.websites')])>Websites</a>
+    <a href="{{ route('admin.settings') }}" @class(['on' => request()->routeIs('admin.settings')])>Settings</a>
+    <a href="{{ route('admin.backups') }}" @class(['on' => request()->routeIs('admin.backups')])>Backups</a>
   @endcan
   <form class="search" method="get" action="{{ route('students.index') }}">
     <input name="q" placeholder="Search mobile, name or ID" value="{{ request('q') }}" aria-label="Search students">

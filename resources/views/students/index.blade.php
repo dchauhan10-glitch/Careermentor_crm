@@ -3,7 +3,8 @@
 @section('content')
 <div class="row" style="align-items:center;margin-bottom:10px">
   <h1 style="margin:0">Students</h1>
-  @can('create', App\Models\Student::class)<div style="flex:0"><a class="btn" href="{{ route('students.create') }}">Add student</a></div>@endcan
+  @can('admin')<div style="flex:0;white-space:nowrap"><a class="btn light" href="{{ route('admin.export', request()->query()) }}" onclick="return confirm('Export this list? Exports are recorded in the activity log.')">Export list</a></div>@endcan
+  @can('create', App\Models\Student::class)<div style="flex:0;white-space:nowrap"><a class="btn" href="{{ route('students.create') }}">Add student</a></div>@endcan
 </div>
 
 <details class="card" @if (collect($filters)->except('q')->filter()->isNotEmpty()) open @endif>

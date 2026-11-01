@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\Admin\DuplicateController;
+use App\Http\Controllers\Admin\ImportController;
+use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\WebsiteController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\TwoFactorController;
 use App\Http\Controllers\DashboardController;
@@ -44,6 +47,30 @@ Route::middleware(['auth', 'account.ready'])->group(function () {
         Route::post('/users/{user}/toggle', [UserController::class, 'toggleActive'])->name('users.toggle');
         Route::post('/users/{user}/password', [UserController::class, 'resetPassword'])->name('users.password');
         Route::post('/users/{user}/handover', [UserController::class, 'handOver'])->name('users.handover');
+
+        Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+        Route::post('/settings/{list}', [SettingsController::class, 'add'])->name('settings.add');
+        Route::post('/settings/{list}/{id}/toggle', [SettingsController::class, 'toggle'])->name('settings.toggle');
+
+        Route::get('/export', [\App\Http\Controllers\Admin\ExportController::class, '__invoke'])->name('export');
+
+        Route::get('/backups', [\App\Http\Controllers\Admin\BackupController::class, 'index'])->name('backups');
+        Route::post('/backups/run', [\App\Http\Controllers\Admin\BackupController::class, 'runNow'])->name('backups.run')->middleware('throttle:3,10');
+        Route::get('/backups/google', [\App\Http\Controllers\Admin\BackupController::class, 'connectGoogle'])->name('backups.google');
+        Route::get('/backups/google/callback', [\App\Http\Controllers\Admin\BackupController::class, 'googleCallback'])->name('backups.google.callback');
+
+        Route::get('/imports', [ImportController::class, 'index'])->name('imports.index');
+        Route::post('/imports', [ImportController::class, 'store'])->name('imports.store')->middleware('throttle:10,1');
+        Route::get('/imports/{batch}/map', [ImportController::class, 'map'])->name('imports.map');
+        Route::post('/imports/{batch}/start', [ImportController::class, 'start'])->name('imports.start');
+        Route::post('/imports/{batch}/cancel', [ImportController::class, 'cancel'])->name('imports.cancel');
+        Route::get('/imports/{batch}', [ImportController::class, 'show'])->name('imports.show');
+
+        Route::get('/websites', [WebsiteController::class, 'index'])->name('websites');
+        Route::post('/websites', [WebsiteController::class, 'store'])->name('websites.store');
+        Route::put('/websites/{connection}', [WebsiteController::class, 'update'])->name('websites.update');
+        Route::post('/websites/{connection}/toggle', [WebsiteController::class, 'toggle'])->name('websites.toggle');
+        Route::post('/websites/{connection}/key', [WebsiteController::class, 'newKey'])->name('websites.key');
 
         Route::get('/duplicates', [DuplicateController::class, 'index'])->name('duplicates');
         Route::post('/duplicates/{review}/keep', [DuplicateController::class, 'keep'])->name('duplicates.keep');

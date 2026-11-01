@@ -81,8 +81,12 @@ return new class extends Migration
             $table->foreignId('uploaded_by')->constrained('users');
             $table->string('original_filename');
             $table->string('stored_path');
+            $table->string('csv_path')->nullable();               // normalized copy used for batch processing
+            $table->unsignedBigInteger('byte_offset')->default(0); // where the next batch starts
+            $table->date('collected_on');
+            $table->json('headers')->nullable();
             $table->json('column_map')->nullable();
-            // uploaded | mapped | processing | completed | failed
+            // uploaded | queued | processing | completed | failed
             $table->string('status', 20)->default('uploaded')->index();
             $table->unsignedInteger('total_rows')->default(0);
             $table->unsignedInteger('processed_rows')->default(0);

@@ -24,66 +24,9 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $f = $request->validate([
-            'q' => ['nullable', 'string', 'max:100'],
-            'status' => ['nullable', 'integer'],
-            'priority' => ['nullable', Rule::enum(Priority::class)],
-            'source' => ['nullable', 'integer'],
-            'course' => ['nullable', 'integer'],
-            'exam' => ['nullable', 'integer'],
-            'college' => ['nullable', 'integer'],
-            'state' => ['nullable', 'integer'],
-            'city' => ['nullable', 'string', 'max:60'],
-            'year' => ['nullable', 'integer'],
-            'assigned' => ['nullable', 'string', 'max:20'], // user id | unassigned
-            'follow_up' => ['nullable', Rule::in(['today', 'overdue', 'upcoming', 'none'])],
-            'follow_from' => ['nullable', 'date'],
-            'follow_to' => ['nullable', 'date'],
-        ]);
+        $f = $request->validate(\App\Services\StudentSearch::rules());
 
-        $q = Student::visibleTo($user)->with(['status', 'assignedUser', 'course', 'firstSource']);
-
-        if ($term = trim($f['q'] ?? '')) {
-            $mobile = MobileNumber::normalize($term);
-            $digits = preg_replace('/\D/', '', $term);
-            $q->where(function ($w) use ($term, $mobile, $digits) {
-                if ($mobile) {
-                    $w->where('mobile', $mobile)->orWhere('parent_mobile', $mobile);
-                } elseif (strlen($digits) >= 4 && $digits === preg_replace('/\s/', '', $term)) {
-                    $w->where('mobile', 'like', '%'.$digits.'%');
-                } else {
-                    $w->where('name', 'like', $term.'%')
-                        ->orWhere('student_code', $term)
-                        ->orWhere('email', mb_strtolower($term));
-                }
-            });
-        }
-
-        $q->when($f['status'] ?? null, fn ($q, $v) => $q->where('lead_status_id', $v))
-            ->when($f['priority'] ?? null, fn ($q, $v) => $q->where('priority', $v))
-            ->when($f['source'] ?? null, fn ($q, $v) => $q->whereHas('enquiries', fn ($e) => $e->where('source_id', $v)))
-            ->when($f['course'] ?? null, fn ($q, $v) => $q->where('course_id', $v))
-            ->when($f['exam'] ?? null, fn ($q, $v) => $q->where('exam_id', $v))
-            ->when($f['college'] ?? null, fn ($q, $v) => $q->where('college_id', $v))
-            ->when($f['state'] ?? null, fn ($q, $v) => $q->where('state_id', $v))
-            ->when($f['city'] ?? null, fn ($q, $v) => $q->where('city_text', 'like', $v.'%'))
-            ->when($f['year'] ?? null, fn ($q, $v) => $q->where('admission_year', $v))
-            ->when($f['follow_from'] ?? null, fn ($q, $v) => $q->where('next_follow_up_at', '>=', $v))
-            ->when($f['follow_to'] ?? null, fn ($q, $v) => $q->where('next_follow_up_at', '<', \Carbon\Carbon::parse($v)->addDay()));
-
-        if (($f['assigned'] ?? null) === 'unassigned') {
-            $q->whereNull('assigned_user_id');
-        } elseif (ctype_digit($f['assigned'] ?? '')) {
-            $q->where('assigned_user_id', (int) $f['assigned']);
-        }
-
-        match ($f['follow_up'] ?? null) {
-            'today' => $q->whereBetween('next_follow_up_at', [today(), today()->endOfDay()]),
-            'overdue' => $q->where('next_follow_up_at', '<', today()),
-            'upcoming' => $q->where('next_follow_up_at', '>', today()->endOfDay()),
-            'none' => $q->whereNull('next_follow_up_at'),
-            default => null,
-        };
+        $q = \App\Services\StudentSearch::query($user, $f)->with(['status', 'assignedUser', 'course', 'firstSource']);
 
         $students = $q->orderByRaw('next_follow_up_at is null')->orderBy('next_follow_up_at')->orderByDesc('id')
             ->paginate(config('crm.per_page'))->withQueryString();

@@ -8,11 +8,15 @@ use Illuminate\Http\Request;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias(['account.ready' => \App\Http\Middleware\EnsureAccountReady::class]);
+        $middleware->alias([
+            'account.ready' => \App\Http\Middleware\EnsureAccountReady::class,
+            'website.key' => \App\Http\Middleware\AuthenticateWebsite::class,
+        ]);
         $middleware->redirectGuestsTo('/login');
         $middleware->redirectUsersTo('/dashboard');
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
