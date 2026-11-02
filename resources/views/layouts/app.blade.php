@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#116d44">
 <title>@yield('title', 'CRM') · CareerMentors CRM</title>
-<link rel="stylesheet" href="{{ asset('css/crm.css') }}?v=2">
+<link rel="stylesheet" href="{{ asset('css/crm.css') }}?v=3">
 </head>
 <body>
 @auth
@@ -51,10 +51,19 @@
   <div>
     <header class="topbar">
       <label for="nav-toggle" class="menu-btn" aria-label="Open menu">@include('partials.icon', ['name' => 'menu'])</label>
-      <form class="search" method="get" action="{{ route('students.index') }}" role="search">
-        @include('partials.icon', ['name' => 'search'])
-        <input name="q" placeholder="Search by mobile, name or student ID" value="{{ request('q') }}" aria-label="Search students">
-      </form>
+      @php($h = now()->hour)
+      <div class="greet">
+        <b>Good {{ $h < 12 ? 'morning' : ($h < 17 ? 'afternoon' : 'evening') }}, {{ explode(' ', $me->name)[0] }}</b>
+        <span data-date>{{ now()->format('l, j F Y') }}</span>
+      </div>
+      <div class="clock" aria-label="Current time">@include('partials.icon', ['name' => 'clock'])<span data-clock>{{ now()->format('g:i A') }}</span></div>
+      <details class="search-pop">
+        <summary class="icon-btn" title="Search students (press /)">@include('partials.icon', ['name' => 'search'])<span class="sr-only">Search</span></summary>
+        <form class="search" method="get" action="{{ route('students.index') }}" role="search">
+          @include('partials.icon', ['name' => 'search'])
+          <input name="q" placeholder="Search by mobile, name or student ID" value="{{ request('q') }}" aria-label="Search students">
+        </form>
+      </details>
       <div class="user">
         <span class="avatar" aria-hidden="true">{{ collect(explode(' ', $me->name))->filter()->take(2)->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->join('') }}</span>
         <span class="who"><b>{{ $me->name }}</b><span>{{ $me->role->label() }}</span></span>
@@ -83,5 +92,19 @@
 </main>
 @endif
 @endauth
+<script>
+(function(){
+  var c=document.querySelector('[data-clock]'),d=document.querySelector('[data-date]');
+  function tick(){var n=new Date();
+    if(c)c.textContent=n.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true}).toUpperCase();
+    if(d)d.textContent=n.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
+  if(c){tick();setInterval(tick,1000);}
+  var pop=document.querySelector('.search-pop');
+  if(pop){pop.addEventListener('toggle',function(){if(pop.open)pop.querySelector('input').focus();});
+    document.addEventListener('keydown',function(e){var t=e.target.tagName;
+      if(e.key==='/'&&t!=='INPUT'&&t!=='TEXTAREA'&&t!=='SELECT'){e.preventDefault();pop.open=true;}
+      if(e.key==='Escape')pop.open=false;});}
+})();
+</script>
 </body>
 </html>
