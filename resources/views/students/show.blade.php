@@ -3,25 +3,28 @@
 @section('content')
 @php($me = auth()->user())
 <div class="card">
-  <div class="row" style="align-items:center">
-    <div style="flex:3">
-      <h1 style="margin:0">{{ $student->name }} <span class="small muted">{{ $student->student_code }}</span></h1>
-      <div>
-        <a href="tel:+91{{ $student->mobile }}"><b>{{ $student->mobile }}</b></a>
-        · <a href="https://wa.me/91{{ $student->mobile }}" target="_blank" rel="noopener">WhatsApp</a>
-        @if ($student->parent_mobile) · Parent: <a href="tel:+91{{ $student->parent_mobile }}">{{ $student->parent_mobile }}</a>@endif
-        @if ($student->email) · {{ $student->email }}@endif
+  <div class="profile">
+    <span class="avatar" aria-hidden="true">{{ collect(explode(' ', $student->name))->filter()->take(2)->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->join('') }}</span>
+    <div class="meta">
+      <h1>{{ $student->name }}</h1>
+      <div class="small muted">{{ $student->student_code }}@if ($student->email) · {{ $student->email }}@endif
+        @if ($student->parent_mobile) · Parent: <a href="tel:+91{{ $student->parent_mobile }}">{{ $student->parent_mobile }}</a>@endif</div>
+      <div class="quick">
+        <a class="btn" href="tel:+91{{ $student->mobile }}">@include('partials.icon', ['name' => 'phone']){{ $student->mobile }}</a>
+        <a class="btn light" href="https://wa.me/91{{ $student->mobile }}" target="_blank" rel="noopener">@include('partials.icon', ['name' => 'chat'])WhatsApp</a>
+        @can('work', $student)<a class="btn accent" href="#log-call">@include('partials.icon', ['name' => 'plus'])Log a call</a>@endcan
       </div>
     </div>
-    <div style="flex:2" class="small">
-      <div>Status: <b>{{ $student->status?->name }}</b> @include('partials.priority', ['p' => $student->priority])</div>
-      <div>Next follow-up: @include('partials.follow', ['at' => $student->next_follow_up_at])</div>
-      <div>Assigned to: <b>{{ $student->assignedUser?->name ?? 'Unassigned' }}</b>@if ($student->team) ({{ $student->team->name }})@endif</div>
-    </div>
+  </div>
+  <div class="facts-strip">
+    <div><span>Status</span><b>{{ $student->status?->name ?? 'None' }}</b></div>
+    <div><span>Priority</span>@include('partials.priority', ['p' => $student->priority])</div>
+    <div><span>Next follow-up</span><b>@include('partials.follow', ['at' => $student->next_follow_up_at])</b></div>
+    <div><span>Assigned to</span><b>{{ $student->assignedUser?->name ?? 'Unassigned' }}</b>@if ($student->team)<span>{{ $student->team->name }}</span>@endif</div>
   </div>
 </div>
 
-<div class="grid side">
+<div class="grid split">
   <div>
     @can('work', $student)
     <div class="card" id="log-call">

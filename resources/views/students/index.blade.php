@@ -1,10 +1,12 @@
 @extends('layouts.app')
 @section('title', 'Students')
 @section('content')
-<div class="row" style="align-items:center;margin-bottom:10px">
-  <h1 style="margin:0">Students</h1>
-  @can('admin')<div style="flex:0;white-space:nowrap"><a class="btn light" href="{{ route('admin.export', request()->query()) }}" onclick="return confirm('Export this list? Exports are recorded in the activity log.')">Export list</a></div>@endcan
-  @can('create', App\Models\Student::class)<div style="flex:0;white-space:nowrap"><a class="btn" href="{{ route('students.create') }}">Add student</a></div>@endcan
+<div class="page-head">
+  <div><h1>Students</h1><p class="sub">{{ number_format($students->total()) }} found</p></div>
+  <div class="actions">
+    @can('admin')<a class="btn light" href="{{ route('admin.export', request()->query()) }}" onclick="return confirm('Export this list? Exports are recorded in the activity log.')">@include('partials.icon', ['name' => 'download'])Export list</a>@endcan
+    @can('create', App\Models\Student::class)<a class="btn" href="{{ route('students.create') }}">@include('partials.icon', ['name' => 'plus'])Add student</a>@endcan
+  </div>
 </div>
 
 <details class="card" @if (collect($filters)->except('q')->filter()->isNotEmpty()) open @endif>
