@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#116d44">
+<link rel="icon" type="image/png" href="{{ asset('img/collegioz-mark.png') }}">
 <title>@yield('title', 'CRM') · CareerMentors CRM</title>
-<link rel="stylesheet" href="{{ asset('css/crm.css') }}?v=6">
+<link rel="stylesheet" href="{{ asset('css/crm.css') }}?v=7">
 </head>
 <body>
 <script>try{if(localStorage.getItem('crm-side-mini')==='1')document.documentElement.classList.add('side-mini')}catch(e){}</script>
@@ -31,7 +32,7 @@
   <label for="nav-toggle" class="scrim" aria-hidden="true"></label>
   <aside class="sidebar">
     <a class="logo" href="{{ route('dashboard') }}">
-      <span class="mark">CM</span>
+      <span class="mark"><img src="{{ asset('img/collegioz-mark.png') }}" alt="" width="30" height="30"></span>
       <span class="logo-text"><b>CareerMentors</b><small>Student Admission CRM</small>
         @unless (app()->environment('production'))<span class="env">TEST</span>@endunless</span>
     </a>
