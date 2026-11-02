@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#116d44">
 <title>@yield('title', 'CRM') · CareerMentors CRM</title>
-<link rel="stylesheet" href="{{ asset('css/crm.css') }}?v=5">
+<link rel="stylesheet" href="{{ asset('css/crm.css') }}?v=6">
 </head>
 <body>
 <script>try{if(localStorage.getItem('crm-side-mini')==='1')document.documentElement.classList.add('side-mini')}catch(e){}</script>

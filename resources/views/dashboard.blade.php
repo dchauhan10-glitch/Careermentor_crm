@@ -163,7 +163,7 @@
   <section class="panel">
     <div class="panel-head"><div><h2>Enquiries by source</h2><p>Where your students come from.</p></div></div>
     @php $maxS = max(1, $bySource->max() ?? 1); @endphp
-    @php $srcColors = ['#2563EB', '#8B5CF6', '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#64748B']; @endphp
+    @php $srcColors = ['#116d44', '#feba0f', '#06B6D4', '#8B5CF6', '#2db37a', '#EF4444', '#64748B']; @endphp
     <ul class="src">
       @foreach ($bySource as $name => $n)
         <li><span class="src-name">{{ $name }}</span><b>{{ number_format($n) }}</b>
