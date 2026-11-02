@@ -3,7 +3,7 @@
 @section('bare')
 <div class="auth">
   <section class="panel">
-    <div class="logo"><span class="mark">CM</span><span><b>CareerMentors</b><small>Student Admission CRM</small>
+    <div class="logo"><span class="mark"><img src="{{ asset('img/collegioz-mark.png') }}" alt="" width="30" height="30"></span><span><b>CareerMentors</b><small>Student Admission CRM</small>
       @unless (app()->environment('production'))<span class="env">TEST</span>@endunless</span></div>
     <h2>Every student, every call, in one place.</h2>
     <p>Track enquiries from your websites and lists, follow up on time, and see how each team is doing.</p>

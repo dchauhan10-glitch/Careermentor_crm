@@ -247,6 +247,8 @@ body{background:var(--bg);font-family:"Segoe UI Variable Text","Segoe UI",system
 .sidebar::-webkit-scrollbar{display:none;width:0;height:0}
 .logo{padding:4px 6px 12px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:6px}
 .logo .mark{background:linear-gradient(135deg,#feba0f,#ffd257);color:#073a23;box-shadow:0 4px 12px rgba(254,186,15,.35)}
+.logo .mark{background:#fff;box-shadow:0 4px 12px rgba(0,0,0,.18)}
+.logo .mark img{width:30px;height:30px;display:block}
 .logo small{color:#b9d6c6}
 .env{background:rgba(245,158,11,.18);color:#fcd34d;border:1px solid rgba(245,158,11,.35)}
 .sidebar .group{color:#9cc3ae;font-size:10.5px;letter-spacing:1.1px;margin:18px 12px 8px}
