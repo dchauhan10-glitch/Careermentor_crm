@@ -34,11 +34,11 @@ h2{font-size:16px;margin:0 0 12px;font-weight:700;color:var(--ink)}
 .sidebar nav a.on svg{opacity:1;color:var(--brand)}
 .sidebar .foot{margin-top:auto;padding:14px 8px 0;font-size:12px;color:#9cc3ae}
 
-.topbar{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.92);backdrop-filter:saturate(1.4) blur(6px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:12px 28px;min-height:66px}
+.topbar{position:sticky;top:0;z-index:5;background:rgba(246,250,247,.88);backdrop-filter:saturate(1.4) blur(6px);justify-content:flex-end;display:flex;align-items:center;gap:14px;padding:10px 28px 0;min-height:58px}
 .greet{line-height:1.25;min-width:0}
 .greet b{display:block;font-size:18px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .greet span{font-size:13px;color:var(--muted)}
-.clock{margin-left:auto;display:inline-flex;align-items:center;gap:8px;background:var(--brand-light);color:var(--brand-dark);border-radius:999px;padding:7px 14px;font-weight:700;font-size:14.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.clock{display:inline-flex;align-items:center;gap:8px;background:var(--brand-light);color:var(--brand-dark);border-radius:999px;padding:7px 14px;font-weight:700;font-size:14.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .clock svg{width:17px;height:17px;color:var(--brand)}
 .icon-btn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;list-style:none;transition:border-color .15s,background .15s}
 .icon-btn::-webkit-details-marker{display:none}
@@ -71,12 +71,17 @@ main{max-width:1320px;margin:0 auto;padding:26px 28px 48px}
 .hero:after{content:"";position:absolute;right:-60px;top:-70px;width:240px;height:240px;border-radius:50%;background:rgba(254,186,15,.16)}
 .hero:before{content:"";position:absolute;right:120px;bottom:-90px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.06)}
 .hero h1{color:#fff;margin:0}.hero p{margin:4px 0 0;color:#cfe6d9}
+.hero h1{font-size:28px}
+.hero-text p{margin:2px 0 0;color:#cfe6d9;font-size:14.5px}
+.hero-side{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:14px;position:relative;z-index:1}
+.big-clock{font-size:40px;font-weight:300;letter-spacing:-.5px;line-height:1;font-variant-numeric:tabular-nums;color:#fff}
+.hero-stats{margin-top:16px}
 .hero .eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--accent);font-weight:700}
 .hero-stats{display:flex;gap:34px;margin-top:6px}
 .hero-stats b{display:block;font-size:34px;line-height:1.1;font-weight:700;font-variant-numeric:tabular-nums}
 .hero-stats span{font-size:13.5px;color:#cfe6d9}
 .hero-stats .bad b{color:#ffd166}
-.hero .actions{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap;position:relative;z-index:1}
+.hero .actions{display:flex;gap:10px;flex-wrap:wrap;position:relative;z-index:1}
 
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px}
 .tile{display:flex;align-items:center;gap:13px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:15px 16px;color:var(--ink);box-shadow:var(--shadow);transition:border-color .15s,box-shadow .15s,transform .15s}
@@ -201,8 +206,8 @@ details.card[open]>summary:before{transform:rotate(45deg)}
   .menu-btn{display:inline-flex}
   .topbar{padding:8px 14px;gap:8px}
   .user .who{display:none}
-  .topbar{flex-wrap:wrap;row-gap:4px}
-  .greet{order:5;flex-basis:100%;padding:2px 4px 2px}.greet b{font-size:17px}.greet span{font-size:12.5px}
+  .topbar{justify-content:flex-start;padding:8px 14px 0}.topbar .clock{margin-left:auto}.topbar .clock[hidden]+.search-pop{margin-left:auto}
+  .hero h1{font-size:22px}.hero-side{margin-left:0;align-items:flex-start;width:100%}.big-clock{font-size:26px}
   .hero:after{width:150px;height:150px;right:-50px;top:-50px}.hero:before{display:none}
   .clock{padding:6px 10px;font-size:13px}.clock svg{display:none}
   .hero-stats{gap:22px}.hero-stats b{font-size:28px}
@@ -218,3 +223,5 @@ details.card[open]>summary:before{transform:rotate(45deg)}
   dl.facts{grid-template-columns:110px 1fr}
 }
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+.clock[hidden]{display:none}

@@ -10,18 +10,23 @@
   'Overdue follow-ups' => ['alert', 'alert'],
 ])
 <section class="hero">
+  @php($h = now()->hour)
   <div class="hero-text">
-    <span class="eyebrow">Today's work</span>
+    <h1>Good {{ $h < 12 ? 'morning' : ($h < 17 ? 'afternoon' : 'evening') }}, {{ explode(' ', auth()->user()->name)[0] }}</h1>
+    <p data-date>{{ now()->format('l, j F Y') }}</p>
     <div class="hero-stats">
       <div><b>{{ number_format($tiles['Follow-ups today']) }}</b><span>follow-ups today</span></div>
       <div @class(['bad' => $tiles['Overdue follow-ups']])><b>{{ number_format($tiles['Overdue follow-ups']) }}</b><span>overdue</span></div>
     </div>
   </div>
+  <div class="hero-side">
+    <div class="big-clock" data-clock>{{ now()->format('g:i:s A') }}</div>
   <div class="actions">
     <a class="btn accent" href="{{ route('follow-ups', ['tab' => 'today']) }}">@include('partials.icon', ['name' => 'phone'])Start calling</a>
     @can('create', App\Models\Student::class)
       <a class="btn ghost" href="{{ route('students.create') }}">@include('partials.icon', ['name' => 'plus'])Add student</a>
     @endcan
+  </div>
   </div>
 </section>
 

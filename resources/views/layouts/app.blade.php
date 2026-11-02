@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#116d44">
 <title>@yield('title', 'CRM') · CareerMentors CRM</title>
-<link rel="stylesheet" href="{{ asset('css/crm.css') }}?v=3">
+<link rel="stylesheet" href="{{ asset('css/crm.css') }}?v=4">
 </head>
 <body>
 @auth
@@ -51,12 +51,7 @@
   <div>
     <header class="topbar">
       <label for="nav-toggle" class="menu-btn" aria-label="Open menu">@include('partials.icon', ['name' => 'menu'])</label>
-      @php($h = now()->hour)
-      <div class="greet">
-        <b>Good {{ $h < 12 ? 'morning' : ($h < 17 ? 'afternoon' : 'evening') }}, {{ explode(' ', $me->name)[0] }}</b>
-        <span data-date>{{ now()->format('l, j F Y') }}</span>
-      </div>
-      <div class="clock" aria-label="Current time">@include('partials.icon', ['name' => 'clock'])<span data-clock>{{ now()->format('g:i A') }}</span></div>
+      <div class="clock" aria-label="Current time" @if (request()->routeIs('dashboard')) hidden @endif>@include('partials.icon', ['name' => 'clock'])<span data-clock>{{ now()->format('g:i A') }}</span></div>
       <details class="search-pop">
         <summary class="icon-btn" title="Search students (press /)">@include('partials.icon', ['name' => 'search'])<span class="sr-only">Search</span></summary>
         <form class="search" method="get" action="{{ route('students.index') }}" role="search">
@@ -94,11 +89,11 @@
 @endauth
 <script>
 (function(){
-  var c=document.querySelector('[data-clock]'),d=document.querySelector('[data-date]');
+  var cs=document.querySelectorAll('[data-clock]'),d=document.querySelector('[data-date]');
   function tick(){var n=new Date();
-    if(c)c.textContent=n.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true}).toUpperCase();
+    var t=n.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true}).toUpperCase();cs.forEach(function(c){c.textContent=t;});
     if(d)d.textContent=n.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
-  if(c){tick();setInterval(tick,1000);}
+  if(cs.length){tick();setInterval(tick,1000);}
   var pop=document.querySelector('.search-pop');
   if(pop){pop.addEventListener('toggle',function(){if(pop.open)pop.querySelector('input').focus();});
     document.addEventListener('keydown',function(e){var t=e.target.tagName;
