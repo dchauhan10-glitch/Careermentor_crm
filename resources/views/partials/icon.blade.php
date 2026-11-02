@@ -1,5 +1,7 @@
 @php($paths = [
   'clock' => '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  'chevrons' => '<path d="M11 17l-5-5 5-5"/><path d="M18 17l-5-5 5-5"/>',
+  'chevron' => '<path d="M9 6l6 6-6 6"/>',
   'home' => '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
   'phone' => '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
   'calendar' => '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',

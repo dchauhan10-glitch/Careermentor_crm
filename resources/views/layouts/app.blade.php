@@ -6,9 +6,10 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#116d44">
 <title>@yield('title', 'CRM') · CareerMentors CRM</title>
-<link rel="stylesheet" href="{{ asset('css/crm.css') }}?v=4">
+<link rel="stylesheet" href="{{ asset('css/crm.css') }}?v=5">
 </head>
 <body>
+<script>try{if(localStorage.getItem('crm-side-mini')==='1')document.documentElement.classList.add('side-mini')}catch(e){}</script>
 @auth
 @php($me = auth()->user())
 @php($nav = fn (string $route, string $pattern, string $icon, string $label) => ['route' => $route, 'on' => request()->routeIs($pattern), 'icon' => $icon, 'label' => $label])
@@ -31,27 +32,31 @@
   <aside class="sidebar">
     <a class="logo" href="{{ route('dashboard') }}">
       <span class="mark">CM</span>
-      <span><b>CareerMentors</b><small>Student Admission CRM</small>
+      <span class="logo-text"><b>CareerMentors</b><small>Student Admission CRM</small>
         @unless (app()->environment('production'))<span class="env">TEST</span>@endunless</span>
     </a>
     <nav aria-label="Main">
       <div class="group">Work</div>
       @foreach ($work as $n)
-        <a href="{{ route($n['route']) }}" @class(['on' => $n['on']])>@include('partials.icon', ['name' => $n['icon']]){{ $n['label'] }}</a>
+        <a href="{{ route($n['route']) }}" title="{{ $n['label'] }}" @class(['on' => $n['on']]) @if ($n['on']) aria-current="page" @endif>@include('partials.icon', ['name' => $n['icon']])<span class="lbl">{{ $n['label'] }}</span></a>
       @endforeach
       @can('admin')
         <div class="group">Admin</div>
         @foreach ($admin as $n)
-          <a href="{{ route($n['route']) }}" @class(['on' => $n['on']])>@include('partials.icon', ['name' => $n['icon']]){{ $n['label'] }}</a>
+          <a href="{{ route($n['route']) }}" title="{{ $n['label'] }}" @class(['on' => $n['on']]) @if ($n['on']) aria-current="page" @endif>@include('partials.icon', ['name' => $n['icon']])<span class="lbl">{{ $n['label'] }}</span></a>
         @endforeach
       @endcan
     </nav>
-    <div class="foot">{{ $me->team?->name ?? $me->role->label() }}</div>
+    <div class="foot">
+      <span class="lbl">{{ $me->team?->name ?? $me->role->label() }}</span>
+      <button type="button" class="collapse-btn" data-collapse title="Collapse menu" aria-label="Collapse menu">@include('partials.icon', ['name' => 'chevrons'])</button>
+    </div>
   </aside>
   <div>
     <header class="topbar">
       <label for="nav-toggle" class="menu-btn" aria-label="Open menu">@include('partials.icon', ['name' => 'menu'])</label>
-      <div class="clock" aria-label="Current time" @if (request()->routeIs('dashboard')) hidden @endif>@include('partials.icon', ['name' => 'clock'])<span data-clock>{{ now()->format('g:i A') }}</span></div>
+      <div class="crumb"><span>CareerMentors</span>@include('partials.icon', ['name' => 'chevron'])<b>@yield('title', 'CRM')</b></div>
+      <div class="clock" aria-label="Current time">@include('partials.icon', ['name' => 'clock'])<span data-clock>{{ now()->format('g:i A') }}</span></div>
       <details class="search-pop">
         <summary class="icon-btn" title="Search students (press /)">@include('partials.icon', ['name' => 'search'])<span class="sr-only">Search</span></summary>
         <form class="search" method="get" action="{{ route('students.index') }}" role="search">
@@ -94,6 +99,10 @@
     var t=n.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true}).toUpperCase();cs.forEach(function(c){c.textContent=t;});
     if(d)d.textContent=n.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
   if(cs.length){tick();setInterval(tick,1000);}
+  var cb=document.querySelector('[data-collapse]');
+  if(cb)cb.addEventListener('click',function(){var m=document.documentElement.classList.toggle('side-mini');
+    try{localStorage.setItem('crm-side-mini',m?'1':'0')}catch(e){}
+    cb.title=m?'Expand menu':'Collapse menu';cb.setAttribute('aria-label',cb.title);});
   var pop=document.querySelector('.search-pop');
   if(pop){pop.addEventListener('toggle',function(){if(pop.open)pop.querySelector('input').focus();});
     document.addEventListener('keydown',function(e){var t=e.target.tagName;
