@@ -243,7 +243,7 @@ body{background:var(--bg);font-family:"Segoe UI Variable Text","Segoe UI",system
 /* Sidebar */
 .shell{background:linear-gradient(90deg,var(--navy-2) var(--side),transparent var(--side));transition:grid-template-columns .22s var(--ease)}
 .sidebar{background:linear-gradient(180deg,var(--navy) 0%,var(--navy-2) 100%);padding:18px 14px;transition:padding .22s var(--ease)}
-.logo{padding:4px 6px 20px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:6px}
+.logo{padding:4px 6px 12px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:6px}
 .logo .mark{background:linear-gradient(135deg,#feba0f,#ffd257);color:#073a23;box-shadow:0 4px 12px rgba(254,186,15,.35)}
 .logo small{color:#b9d6c6}
 .env{background:rgba(245,158,11,.18);color:#fcd34d;border:1px solid rgba(245,158,11,.35)}
@@ -265,7 +265,7 @@ body{background:var(--bg);font-family:"Segoe UI Variable Text","Segoe UI",system
 /* Collapsed (icon-only) sidebar */
 .side-mini{--side:76px}
 .side-mini .sidebar{padding:18px 10px}
-.side-mini .logo{justify-content:center;padding:4px 0 20px}
+.side-mini .logo{justify-content:center;padding:14px 0 21px}
 .side-mini .logo-text,.side-mini .sidebar .lbl{display:none}
 .side-mini .sidebar .group{font-size:0;margin:12px 6px 6px;height:1px}
 .side-mini .sidebar nav .group:not(:first-child){padding-top:0}
@@ -417,8 +417,8 @@ body{background:var(--bg);font-family:"Segoe UI Variable Text","Segoe UI",system
 .feed-meta{font-size:12px;color:var(--muted-2)}
 
 /* Coloured top bar (Collegioz green), joined to the sidebar */
-.topbar{background:linear-gradient(90deg,#0b5233 0%,#116d44 100%);border-bottom:0;box-shadow:0 2px 10px rgba(7,58,35,.18);color:#fff}
-.topbar .crumb{color:#b9d6c6}.topbar .crumb b{color:#fff}
+.topbar{min-height:92px;padding-top:14px;padding-bottom:14px;background:linear-gradient(90deg,#0b5233 0%,#116d44 100%);border-bottom:0;box-shadow:0 2px 10px rgba(7,58,35,.18);color:#fff}
+.topbar .crumb{color:#b9d6c6;font-size:15px}.topbar .crumb b{color:#fff}
 .topbar .clock{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);color:#fff}
 .topbar .clock svg{color:#feba0f}
 .topbar .icon-btn{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.22);color:#fff}
@@ -437,7 +437,7 @@ body{background:var(--bg);font-family:"Segoe UI Variable Text","Segoe UI",system
   .side-mini{--side:244px}
   .side-mini .logo-text,.side-mini .sidebar .lbl{display:revert}
   .collapse-btn{display:none}
-  .topbar{padding:8px 14px}.crumb{display:none}.clock{margin-left:auto}
+  .topbar{padding:8px 14px;min-height:64px}.crumb{display:none}.clock{margin-left:auto}
   .dash-head h1{font-size:21px}.dash-actions{margin-left:0;width:100%}.dash-actions .btn-x{flex:1;justify-content:center}
   .attention{align-items:flex-start;flex-wrap:wrap}.attention p{flex:1 1 calc(100% - 50px)}.dash .att-go{margin-left:44px}
   .kpis{gap:10px}.kpi{grid-template-columns:1fr;grid-template-rows:auto;padding:14px;row-gap:8px;min-height:0}
