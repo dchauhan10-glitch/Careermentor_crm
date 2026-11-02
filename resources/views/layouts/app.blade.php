@@ -4,32 +4,76 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#116d44">
 <title>@yield('title', 'CRM') · CareerMentors CRM</title>
-<link rel="stylesheet" href="{{ asset('css/crm.css') }}">
+<link rel="stylesheet" href="{{ asset('css/crm.css') }}?v=2">
 </head>
 <body>
 @auth
-<nav class="top">
-  <span class="brand">CareerMentors CRM</span>
-  <a href="{{ route('dashboard') }}" @class(['on' => request()->routeIs('dashboard')])>Dashboard</a>
-  <a href="{{ route('follow-ups') }}" @class(['on' => request()->routeIs('follow-ups')])>Follow-ups</a>
-  <a href="{{ route('students.index') }}" @class(['on' => request()->routeIs('students.*')])>Students</a>
-  @can('admin')
-    <a href="{{ route('admin.users') }}" @class(['on' => request()->routeIs('admin.users')])>Staff &amp; teams</a>
-    <a href="{{ route('admin.duplicates') }}" @class(['on' => request()->routeIs('admin.duplicates')])>Duplicates</a>
-    <a href="{{ route('admin.imports.index') }}" @class(['on' => request()->routeIs('admin.imports.*')])>Import</a>
-    <a href="{{ route('admin.websites') }}" @class(['on' => request()->routeIs('admin.websites')])>Websites</a>
-    <a href="{{ route('admin.settings') }}" @class(['on' => request()->routeIs('admin.settings')])>Settings</a>
-    <a href="{{ route('admin.backups') }}" @class(['on' => request()->routeIs('admin.backups')])>Backups</a>
-  @endcan
-  <form class="search" method="get" action="{{ route('students.index') }}">
-    <input name="q" placeholder="Search mobile, name or ID" value="{{ request('q') }}" aria-label="Search students">
-    <button class="btn small">Search</button>
-  </form>
-  <span class="who">{{ auth()->user()->name }} · {{ auth()->user()->role->label() }}</span>
-  <form method="post" action="{{ route('logout') }}">@csrf<button class="btn small light">Log out</button></form>
-</nav>
-@endauth
+@php($me = auth()->user())
+@php($nav = fn (string $route, string $pattern, string $icon, string $label) => ['route' => $route, 'on' => request()->routeIs($pattern), 'icon' => $icon, 'label' => $label])
+@php($work = [
+  $nav('dashboard', 'dashboard', 'home', 'Dashboard'),
+  $nav('follow-ups', 'follow-ups', 'calendar', 'Follow-ups'),
+  $nav('students.index', 'students.*', 'student', 'Students'),
+])
+@php($admin = [
+  $nav('admin.users', 'admin.users', 'team', 'Staff & teams'),
+  $nav('admin.duplicates', 'admin.duplicates', 'copy', 'Duplicates'),
+  $nav('admin.imports.index', 'admin.imports.*', 'upload', 'Import lists'),
+  $nav('admin.websites', 'admin.websites', 'globe', 'Websites'),
+  $nav('admin.settings', 'admin.settings', 'settings', 'Settings'),
+  $nav('admin.backups', 'admin.backups', 'shield', 'Backups'),
+])
+<input type="checkbox" id="nav-toggle" class="sr-only" aria-hidden="true">
+<div class="shell">
+  <label for="nav-toggle" class="scrim" aria-hidden="true"></label>
+  <aside class="sidebar">
+    <a class="logo" href="{{ route('dashboard') }}">
+      <span class="mark">CM</span>
+      <span><b>CareerMentors</b><small>Student Admission CRM</small>
+        @unless (app()->environment('production'))<span class="env">TEST</span>@endunless</span>
+    </a>
+    <nav aria-label="Main">
+      <div class="group">Work</div>
+      @foreach ($work as $n)
+        <a href="{{ route($n['route']) }}" @class(['on' => $n['on']])>@include('partials.icon', ['name' => $n['icon']]){{ $n['label'] }}</a>
+      @endforeach
+      @can('admin')
+        <div class="group">Admin</div>
+        @foreach ($admin as $n)
+          <a href="{{ route($n['route']) }}" @class(['on' => $n['on']])>@include('partials.icon', ['name' => $n['icon']]){{ $n['label'] }}</a>
+        @endforeach
+      @endcan
+    </nav>
+    <div class="foot">{{ $me->team?->name ?? $me->role->label() }}</div>
+  </aside>
+  <div>
+    <header class="topbar">
+      <label for="nav-toggle" class="menu-btn" aria-label="Open menu">@include('partials.icon', ['name' => 'menu'])</label>
+      <form class="search" method="get" action="{{ route('students.index') }}" role="search">
+        @include('partials.icon', ['name' => 'search'])
+        <input name="q" placeholder="Search by mobile, name or student ID" value="{{ request('q') }}" aria-label="Search students">
+      </form>
+      <div class="user">
+        <span class="avatar" aria-hidden="true">{{ collect(explode(' ', $me->name))->filter()->take(2)->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->join('') }}</span>
+        <span class="who"><b>{{ $me->name }}</b><span>{{ $me->role->label() }}</span></span>
+        <form method="post" action="{{ route('logout') }}">@csrf<button class="btn small light" title="Log out">@include('partials.icon', ['name' => 'logout'])<span class="sr-only">Log out</span></button></form>
+      </div>
+    </header>
+    <main>
+      @if (session('status'))<div class="flash">{{ session('status') }}</div>@endif
+      @if ($errors->any())
+        <div class="errors">@foreach ($errors->all() as $e)<div>{{ $e }}</div>@endforeach</div>
+      @endif
+      @yield('content')
+    </main>
+  </div>
+</div>
+@else
+@hasSection('bare')
+@yield('bare')
+@else
 <main>
   @if (session('status'))<div class="flash">{{ session('status') }}</div>@endif
   @if ($errors->any())
@@ -37,5 +81,7 @@
   @endif
   @yield('content')
 </main>
+@endif
+@endauth
 </body>
 </html>
