@@ -32,8 +32,18 @@ Artisan::command('crm:backup-decrypt {file} {out}', function (string $file, stri
 /*
  * Shared hosting: one cron line runs `php artisan schedule:run` every minute.
  * No program has to stay running in the background.
+ *
+ * Hostinger turns off PHP's ability to start other programs (proc_open), so
+ * each task runs inside the same PHP process with Schedule::call instead of
+ * Schedule::command (which would start a new process).
  */
-Schedule::command('queue:work --stop-when-empty --max-time=50 --tries=3')->everyMinute()->withoutOverlapping(5);
-Schedule::command('crm:backup')->dailyAt('02:00')->withoutOverlapping(60);
-Schedule::command('crm:backup-restore-test')->monthlyOn(1, '03:30')->withoutOverlapping(60);
-Schedule::command('queue:prune-failed --hours=720')->weekly();
+$inProcess = fn (string $command, array $options = []) => fn () => Artisan::call($command, $options);
+
+Schedule::call($inProcess('queue:work', ['--stop-when-empty' => true, '--max-time' => 50, '--tries' => 3]))
+    ->name('crm-queue')->everyMinute()->withoutOverlapping(5);
+Schedule::call($inProcess('crm:backup'))
+    ->name('crm-backup')->dailyAt('02:00')->withoutOverlapping(60);
+Schedule::call($inProcess('crm:backup-restore-test'))
+    ->name('crm-restore-test')->monthlyOn(1, '03:30')->withoutOverlapping(60);
+Schedule::call($inProcess('queue:prune-failed', ['--hours' => 720]))
+    ->name('crm-prune-failed')->weekly();
