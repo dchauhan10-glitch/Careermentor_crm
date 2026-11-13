@@ -2,47 +2,44 @@
 @section('title', 'Dashboard')
 @section('content')
 @php
-  // One colour per lead status, used by the chart, its legend and the status badges, so they always match.
-  $statusPalette = [
-    'New' => '#8B5CF6', 'Not Contacted' => '#64748B', 'Interested' => '#06B6D4', 'Not Interested' => '#EF4444',
-    'Call Back' => '#F59E0B', 'No Response' => '#F97316', 'Follow-up Required' => '#2563EB',
-    'Converted' => '#10B981', 'Closed' => '#94A3B8',
-  ];
-  $spare = ['#172554', '#0EA5E9', '#D946EF', '#84CC16', '#A16207'];
-  $statusColor = function (string $name) use (&$statusPalette, $spare) {
-      return $statusPalette[$name] ??= $spare[count($statusPalette) % count($spare)];
-  };
+  $statusColor = fn (string $name) => \App\Support\StatusTone::hex($name);
   $h = now()->hour;
   $overdue = $tiles['Overdue follow-ups'];
   $today = $tiles['Follow-ups today'];
   $unassignedCount = $unassigned ?? 0;
-  // [label, value, icon, tone, link, emphasis]
+  $me = auth()->user();
+  $scope = $me->isSuperAdmin() ? 'All teams' : ($me->isTeamLead() ? 'Your team' : 'Your leads');
+  // [label, value, icon, tone, link, foot]
   $cards = [
-    ['Total leads', $tiles['Total leads'], 'student', 'blue', route('students.index'), false],
-    ['New leads', $tiles['New'], 'star', 'purple', route('students.index'), false],
-    ['Interested', $tiles['Interested'], 'chat', 'cyan', route('students.index'), false],
-    ['Converted', $tiles['Converted'], 'check', 'green', route('students.index'), false],
-    ['Follow-ups today', $today, 'calendar', 'amber', route('follow-ups', ['tab' => 'today']), false],
-    ['Overdue follow-ups', $overdue, 'alert', 'coral', route('follow-ups', ['tab' => 'overdue']), $overdue > 0],
+    ['Total leads', $tiles['Total leads'], 'student', 'hero', route('students.index'), $scope],
+    ['Calls made today', $tiles['Calls today'], 'phone', 'gold', route('calls.index', ['period' => 'today']), $me->isCounsellor() ? 'By you' : 'By '.mb_strtolower($scope)],
+    ['Interested', $tiles['Interested'], 'trend', 'green', route('students.index', ['quick' => 'interested']), 'Warm leads'],
+    ['Not Interested', $tiles['Not Interested'], 'x-circle', 'red', route('students.index', ['quick' => 'not_interested']), 'Closed for now'],
+    ['Follow-ups due today', $today, 'calendar', 'amber', route('follow-ups', ['tab' => 'today']), $overdue ? number_format($overdue).' overdue' : 'None overdue'],
+  ];
+  // Smaller second row: [label, value, icon, tone, link, flag]
+  $minor = [
+    ['Overdue', $overdue, 'alert', 'amber', route('follow-ups', ['tab' => 'overdue']), $overdue > 0],
+    ['Not called yet', $tiles['Not called yet'], 'inbox', 'grey', route('students.index', ['quick' => 'not_called']), false],
+    ['Converted', $tiles['Converted'], 'check', 'green', route('students.index', ['quick' => 'converted']), false],
   ];
   if (isset($unassigned)) {
-      $cards[] = ['Unassigned leads', $unassigned, 'inbox', 'orange', route('students.index', ['assigned' => 'unassigned']), $unassigned > 0];
-      $cards[] = ['Possible duplicates', $openDuplicates, 'copy', 'slate', route('admin.duplicates'), false];
+      $minor[] = ['Unassigned leads', $unassigned, 'users', 'gold', route('students.index', ['assigned' => 'unassigned']), $unassigned > 0];
+      $minor[] = ['Possible duplicates', $openDuplicates, 'copy', 'grey', route('admin.duplicates'), false];
   }
 @endphp
 <div class="dash">
 
 <header class="dash-head">
   <div>
-    <h1>Good {{ $h < 12 ? 'morning' : ($h < 17 ? 'afternoon' : 'evening') }}, {{ explode(' ', auth()->user()->name)[0] }}</h1>
+    <h1>Good {{ $h < 12 ? 'morning' : ($h < 17 ? 'afternoon' : 'evening') }}, {{ explode(' ', $me->name)[0] }}</h1>
     <p class="sub"><span data-date>{{ now()->format('l, j F Y') }}</span>
-      <span class="dot-sep"></span>{{ number_format($today) }} follow-ups due today
-      <span class="dot-sep"></span>{{ number_format($tiles['Total leads']) }} leads in your view</p>
+      <span class="dot-sep"></span><span>{{ $scope }}</span></p>
   </div>
   <div class="dash-actions">
-    <a class="btn-x primary" href="{{ route('follow-ups', ['tab' => 'today']) }}">@include('partials.icon', ['name' => 'phone'])Start calling</a>
+    <a class="btn" href="{{ route('follow-ups', ['tab' => 'today']) }}">@include('partials.icon', ['name' => 'phone'])Start calling</a>
     @can('create', App\Models\Student::class)
-      <a class="btn-x outline" href="{{ route('students.create') }}">@include('partials.icon', ['name' => 'plus'])Add student</a>
+      <a class="btn light" href="{{ route('students.create') }}">@include('partials.icon', ['name' => 'plus'])Add lead</a>
     @endcan
   </div>
 </header>
@@ -61,12 +58,21 @@
 @endif
 
 <section class="kpis" aria-label="Summary">
-  @foreach ($cards as [$label, $n, $icon, $tone, $href, $strong])
-    <a href="{{ $href }}" @class(['kpi', 't-'.$tone, 'strong' => $strong])>
-      <span class="kpi-ic">@include('partials.icon', ['name' => $icon])</span>
-      <span class="kpi-lbl">{{ $label }}</span>
+  @foreach ($cards as [$label, $n, $icon, $tone, $href, $foot])
+    <a href="{{ $href }}" @class(['kpi', $tone === 'hero' ? 'hero' : 't-'.$tone])>
+      <span class="kpi-top"><span class="kpi-lbl">{{ $label }}</span><span class="kpi-ic">@include('partials.icon', ['name' => $icon])</span></span>
       <b class="kpi-n">{{ number_format($n) }}</b>
-      @if ($strong)<span class="kpi-flag">Needs attention</span>@endif
+      <span class="kpi-foot">{{ $foot }}</span>
+    </a>
+  @endforeach
+</section>
+
+<section class="kpis minor" aria-label="More numbers">
+  @foreach ($minor as [$label, $n, $icon, $tone, $href, $strong])
+    <a href="{{ $href }}" @class(['kpi', 't-'.$tone])>
+      <span class="kpi-ic">@include('partials.icon', ['name' => $icon])</span>
+      <span class="flex flex-col min-w-0"><span class="kpi-lbl truncate">{{ $label }}</span><b class="kpi-n">{{ number_format($n) }}</b></span>
+      @if ($strong)<span class="ml-auto w-2 h-2 rounded-full bg-amber-500" title="Needs attention"></span>@endif
     </a>
   @endforeach
 </section>
@@ -74,14 +80,14 @@
 <div class="dash-grid">
   <section class="panel">
     <div class="panel-head">
-      <div><h2>Calls due today and overdue</h2><p>Oldest first. Tap the phone to call.</p></div>
+      <div><h2>Calls due today and overdue</h2><p>Oldest first. Tap the green phone to call.</p></div>
       <a class="link" href="{{ route('follow-ups') }}">All follow-ups →</a>
     </div>
     <ul class="calls">
       @forelse ($todayList as $s)
         @php $late = $s->next_follow_up_at && $s->next_follow_up_at->lt(today()); @endphp
         <li @class(['late' => $late])>
-          <span class="who-av" style="--c:{{ $statusColor($s->status?->name ?? '') }}">{{ mb_strtoupper(mb_substr($s->name, 0, 1)) }}</span>
+          <span class="who-av">{{ mb_strtoupper(mb_substr($s->name, 0, 1)) }}</span>
           <div class="call-main">
             <a href="{{ route('students.show', $s) }}">{{ $s->name }}</a>
             <span class="when">
@@ -89,9 +95,7 @@
               {{ $s->next_follow_up_at?->isToday() ? $s->next_follow_up_at->format('g:i A') : $s->next_follow_up_at?->format('j M Y, g:i A') }}
             </span>
           </div>
-          @if ($s->status)
-            <span class="badge" style="--c:{{ $statusColor($s->status->name) }}">{{ $s->status->name }}</span>
-          @endif
+          <span class="hidden sm:inline-flex">@include('partials.status', ['s' => $s->status])</span>
           <a class="call-btn" href="tel:+91{{ $s->mobile }}" title="Call {{ $s->name }}" aria-label="Call {{ $s->name }}">@include('partials.icon', ['name' => 'phone'])</a>
         </li>
       @empty
@@ -150,7 +154,7 @@
         <td class="muted">{{ $a['user']->team?->name }}</td>
         <td class="num">{{ $a['assigned'] }}</td>
         <td class="num">{{ $a['calls7'] }}</td>
-        <td class="num">@if ($a['overdue'])<span class="badge" style="--c:#EF4444">{{ $a['overdue'] }}</span>@else<span class="muted">0</span>@endif</td>
+        <td class="num">@if ($a['overdue'])<span class="badge st-amber">{{ $a['overdue'] }}</span>@else<span class="muted">0</span>@endif</td>
       </tr>
     @endforeach
     </tbody>
@@ -163,7 +167,7 @@
   <section class="panel">
     <div class="panel-head"><div><h2>Enquiries by source</h2><p>Where your students come from.</p></div></div>
     @php $maxS = max(1, $bySource->max() ?? 1); @endphp
-    @php $srcColors = ['#116d44', '#feba0f', '#06B6D4', '#8B5CF6', '#2db37a', '#EF4444', '#64748B']; @endphp
+    @php $srcColors = ['#116d44', '#feba0f', '#3f9c72', '#c48700', '#74bd9a', '#ffd24d', '#0b4a2f']; @endphp
     <ul class="src">
       @foreach ($bySource as $name => $n)
         <li><span class="src-name">{{ $name }}</span><b>{{ number_format($n) }}</b>

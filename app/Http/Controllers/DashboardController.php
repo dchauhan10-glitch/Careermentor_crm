@@ -24,6 +24,10 @@ class DashboardController extends Controller
             'Total leads' => $byStatus->sum(),
             'New' => $byStatus['New'] ?? 0,
             'Interested' => $byStatus['Interested'] ?? 0,
+            'Not Interested' => $byStatus['Not Interested'] ?? 0,
+            'Not called yet' => collect(\App\Support\StatusTone::NOT_CALLED)->sum(fn ($n) => $byStatus[$n] ?? 0),
+            'Calls today' => CallEntry::whereIn('student_id', $base()->select('id'))->where('called_at', '>=', today())
+                ->when($user->isCounsellor(), fn ($q) => $q->where('user_id', $user->id))->count(),
             'Converted' => $byStatus['Converted'] ?? 0,
             'Follow-ups today' => $base()->whereBetween('next_follow_up_at', [today(), today()->endOfDay()])->count(),
             'Overdue follow-ups' => $base()->where('next_follow_up_at', '<', today())->count(),

@@ -13,6 +13,15 @@ use Illuminate\Validation\Rule;
 /** Search and filters shared by the student list and the export. */
 class StudentSearch
 {
+    /** Quick filter buttons on the Leads list: key => label. */
+    public const QUICK = [
+        'interested' => 'Interested',
+        'not_interested' => 'Not Interested',
+        'not_called' => 'Not Called Yet',
+        'follow_up_due' => 'Follow-up Due',
+        'converted' => 'Converted',
+    ];
+
     public static function rules(): array
     {
         return [
@@ -30,6 +39,9 @@ class StudentSearch
             'follow_up' => ['nullable', Rule::in(['today', 'overdue', 'upcoming', 'none'])],
             'follow_from' => ['nullable', 'date'],
             'follow_to' => ['nullable', 'date'],
+            'quick' => ['nullable', Rule::in(array_keys(self::QUICK))],
+            'sort' => ['nullable', Rule::in(['name', 'status', 'follow', 'added', 'assigned'])],
+            'dir' => ['nullable', Rule::in(['asc', 'desc'])],
         ];
     }
 
@@ -76,6 +88,17 @@ class StudentSearch
             'overdue' => $q->where('next_follow_up_at', '<', today()),
             'upcoming' => $q->where('next_follow_up_at', '>', today()->endOfDay()),
             'none' => $q->whereNull('next_follow_up_at'),
+            default => null,
+        };
+
+        $byStatus = fn (array $names) => $q->whereHas('status', fn ($s) => $s->whereIn('name', $names));
+        match ($f['quick'] ?? null) {
+            'interested' => $byStatus(['Interested']),
+            'not_interested' => $byStatus(['Not Interested']),
+            'not_called' => $byStatus(\App\Support\StatusTone::NOT_CALLED),
+            'converted' => $byStatus(['Converted']),
+            // Follow-up date is today or already past.
+            'follow_up_due' => $q->where('next_follow_up_at', '<=', today()->endOfDay()),
             default => null,
         };
 

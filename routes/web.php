@@ -28,6 +28,7 @@ Route::middleware(['auth', 'account.ready'])->group(function () {
 
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
     Route::get('/follow-ups', FollowUpController::class)->name('follow-ups');
+    Route::get('/calls', \App\Http\Controllers\CallHistoryController::class)->name('calls.index');
 
     Route::get('/students', [StudentController::class, 'index'])->name('students.index');
     Route::get('/students/new', [StudentController::class, 'create'])->name('students.create');

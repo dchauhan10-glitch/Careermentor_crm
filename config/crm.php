@@ -6,4 +6,7 @@ return [
 
     // Rows per page in lists (kept small for shared hosting).
     'per_page' => 25,
+
+    // Menu style: 'light' (white with green accents) or 'dark' (dark green).
+    'sidebar' => env('CRM_SIDEBAR', 'light'),
 ];
