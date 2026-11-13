@@ -53,7 +53,7 @@
     <kbd>/</kbd>
   </form>
   <div class="ml-auto flex items-center gap-2 sm:gap-3">
-    <a class="icon-only md:hidden" href="{{ route('students.index', ['focus' => 'search']) }}" aria-label="Search">@include('partials.icon', ['name' => 'search'])</a>
+    <a class="icon-only lg:hidden" href="{{ route('students.index', ['focus' => 'search']) }}" aria-label="Search">@include('partials.icon', ['name' => 'search'])</a>
     <span class="clock" aria-label="Current time">@include('partials.icon', ['name' => 'clock'])<span data-clock>{{ now()->format('g:i A') }}</span></span>
     <div class="appuser">
       <span class="who"><b>{{ $me->name }}</b><span>{{ $me->role->label() }}@if ($me->team) · {{ $me->team->name }}@endif</span></span>

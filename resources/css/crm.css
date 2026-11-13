@@ -89,7 +89,7 @@
   .brandmark small { @apply block text-xs text-brand-100/90 font-medium; }
   .env { @apply ml-1.5 align-middle inline-block rounded-md bg-gold-400 text-brand-950 text-[10.5px] font-extrabold px-1.5 py-px tracking-wider; }
 
-  .appsearch { @apply relative hidden md:block flex-1 max-w-md ml-6; }
+  .appsearch { @apply relative hidden lg:block flex-1 max-w-md ml-6; }
   .appsearch svg { @apply absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-white/70 pointer-events-none; }
   .appsearch input { @apply bg-white/12 border-white/15 text-white placeholder:text-white/65 pl-10 py-2 shadow-none focus:bg-white focus:text-ink focus:placeholder:text-slate-400 focus:border-white focus:ring-white/25; }
   .appsearch input:focus + kbd, .appsearch input:not(:placeholder-shown) + kbd { display: none; }
@@ -101,6 +101,7 @@
   .appuser .who { @apply hidden sm:block leading-tight text-right; }
   .appuser .who b { @apply block text-sm font-bold; }
   .appuser .who span { @apply text-xs text-brand-100; }
+  .appuser .avatar { @apply hidden sm:grid; }
   .avatar { @apply grid place-items-center shrink-0 w-9 h-9 rounded-full bg-gold-400 text-brand-950 font-extrabold text-[13px] ring-2 ring-white/30; }
   .logout { @apply inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-white/20 ring-1 ring-white/20 px-3 h-9 text-sm font-semibold text-white cursor-pointer transition; }
   .logout svg { @apply w-[18px] h-[18px]; }
@@ -190,7 +191,7 @@
   .btn.danger { @apply bg-white border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800; }
   .btn.small { @apply px-3 py-1.5 text-[13px] rounded-lg; }
   .btn.small svg { @apply w-4 h-4; }
-  .btn.block { @apply w-full; }
+
 
   .flash { @apply flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 text-brand-800 px-4 py-3 mb-5 font-semibold; }
   .errors { @apply rounded-xl border border-red-200 bg-red-50 text-red-700 px-4 py-3 mb-5; }
@@ -301,7 +302,7 @@
   .quickdates button { @apply rounded-lg border border-line bg-white px-3 h-9 text-[13px] font-semibold text-slate-600 cursor-pointer hover:border-brand-300 hover:text-brand-800; }
 
   /* ---------- Mobile lead cards (phones) ---------- */
-  .lead-cards { @apply grid gap-3 md:hidden list-none m-0 p-0; }
+  .lead-cards { @apply grid grid-cols-1 gap-3 md:hidden list-none m-0 p-0; }
   .lead-card { @apply flex items-center gap-3 bg-white border border-line rounded-2xl p-3.5 shadow-card; }
   .lead-card .main { @apply flex-1 min-w-0; }
   .lead-card .main a { @apply block font-bold text-ink truncate text-[15.5px]; }

@@ -1,8 +1,8 @@
 @extends('layouts.app')
-@section('title', 'Add student')
+@section('title', 'Add lead')
 @section('content')
 <div class="card" style="max-width:720px">
-  <h1>Add student</h1>
+  <h1>Add lead</h1>
   <p class="muted small">If the mobile number already exists, this is added to that student as a new enquiry.</p>
   <form method="post" action="{{ route('students.store') }}">
     @csrf
