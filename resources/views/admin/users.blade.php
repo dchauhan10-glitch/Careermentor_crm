@@ -1,7 +1,7 @@
 @extends('layouts.app')
-@section('title', 'Staff and teams')
+@section('title', 'Users')
 @section('content')
-<h1>Staff and teams</h1>
+<div class="page-head"><div><h1>Users</h1><p class="sub">Staff logins, roles and teams.</p></div></div>
 
 <div class="grid g2">
 @foreach ($teams as $team)

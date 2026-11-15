@@ -22,6 +22,13 @@
   'check' => '<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/>',
   'inbox' => '<path d="M3 13l3-8h12l3 8v6H3z"/><path d="M3 13h5l1 3h6l1-3h5"/>',
   'chat' => '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
+  'lock' => '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  'sort' => '<path d="M8 9l4-4 4 4M8 15l4 4 4-4"/>',
+  'arrow-up' => '<path d="M12 19V5M6 11l6-6 6 6"/>',
+  'arrow-down' => '<path d="M12 5v14M6 13l6 6 6-6"/>',
+  'whatsapp' => '<path d="M3.5 20.5l1.3-4.3A8.5 8.5 0 1 1 8 19.3z"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1.2-1.6-2.2-1-1 .9a5 5 0 0 1-2.8-2.8l.9-1-1-2.2z"/>',
+  'x-circle' => '<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',
+  'trend' => '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
   'download' => '<path d="M12 4v12M7 11l5 5 5-5M4 20h16"/>',
 ])
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{!! $paths[$name] ?? '' !!}</svg>
+<svg class="{{ $class ?? '' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{!! $paths[$name] ?? '' !!}</svg>

@@ -2,25 +2,25 @@
 @section('title', $student->name)
 @section('content')
 @php($me = auth()->user())
+<a href="{{ url()->previous() !== url()->current() ? url()->previous() : route('students.index') }}" class="inline-flex items-center gap-1 text-sm font-semibold mb-3">@include('partials.icon', ['name' => 'chevron', 'class' => 'w-4 h-4 rotate-180'])Back</a>
 <div class="card">
   <div class="profile">
     <span class="avatar" aria-hidden="true">{{ collect(explode(' ', $student->name))->filter()->take(2)->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->join('') }}</span>
     <div class="meta">
-      <h1>{{ $student->name }}</h1>
-      <div class="small muted">{{ $student->student_code }}@if ($student->email) · {{ $student->email }}@endif
+      <div class="flex flex-wrap items-center gap-2"><h1>{{ $student->name }}</h1>@include('partials.status', ['s' => $student->status])</div>
+      <div class="small muted">{{ $student->student_code }} · {{ $student->mobile }}@if ($student->email) · {{ $student->email }}@endif
         @if ($student->parent_mobile) · Parent: <a href="tel:+91{{ $student->parent_mobile }}">{{ $student->parent_mobile }}</a>@endif</div>
-      <div class="quick">
-        <a class="btn" href="tel:+91{{ $student->mobile }}">@include('partials.icon', ['name' => 'phone']){{ $student->mobile }}</a>
-        <a class="btn light" href="https://wa.me/91{{ $student->mobile }}" target="_blank" rel="noopener">@include('partials.icon', ['name' => 'chat'])WhatsApp</a>
-        @can('work', $student)<a class="btn accent" href="#log-call">@include('partials.icon', ['name' => 'plus'])Log a call</a>@endcan
-      </div>
+    </div>
+    <div class="callbar w-full lg:w-auto">
+      <a class="bigcall" href="tel:+91{{ $student->mobile }}">@include('partials.icon', ['name' => 'phone'])Call {{ $student->mobile }}</a>
+      <a class="bigwa" href="https://wa.me/91{{ $student->mobile }}" target="_blank" rel="noopener" aria-label="WhatsApp">@include('partials.icon', ['name' => 'whatsapp'])<span class="hidden sm:inline">WhatsApp</span></a>
     </div>
   </div>
   <div class="facts-strip">
-    <div><span>Status</span><b>{{ $student->status?->name ?? 'None' }}</b></div>
+    <div><span>Status</span>@include('partials.status', ['s' => $student->status])</div>
     <div><span>Priority</span>@include('partials.priority', ['p' => $student->priority])</div>
-    <div><span>Next follow-up</span><b>@include('partials.follow', ['at' => $student->next_follow_up_at])</b></div>
-    <div><span>Assigned to</span><b>{{ $student->assignedUser?->name ?? 'Unassigned' }}</b>@if ($student->team)<span>{{ $student->team->name }}</span>@endif</div>
+    <div><span>Next follow-up</span>@include('partials.follow', ['at' => $student->next_follow_up_at])</div>
+    <div><span>Assigned to</span><b>{{ $student->assignedUser?->name ?? 'Unassigned' }}</b>@if ($student->team)<span class="block text-xs text-slate-500">{{ $student->team->name }}</span>@endif</div>
   </div>
 </div>
 
@@ -28,34 +28,41 @@
   <div>
     @can('work', $student)
     <div class="card" id="log-call">
-      <h2>Log a call</h2>
-      <form method="post" action="{{ route('students.calls.store', $student) }}">
+      <div class="card-head"><h2>After the call</h2><span class="locked ml-auto">@include('partials.icon', ['name' => 'lock'])Saved calls can't be edited</span></div>
+      <form method="post" action="{{ route('students.calls.store', $student) }}" data-callform>
         @csrf
+        <label class="!mt-0">Result of the call</label>
+        <div class="choice" role="radiogroup" aria-label="New status">
+          <label class="c-none"><input type="radio" name="lead_status_id" value="" @checked(old('lead_status_id', '') === '')><span>No change</span></label>
+          @foreach ($lists['statuses'] as $o)
+            <label class="c-{{ \App\Support\StatusTone::tone($o->name) }}"><input type="radio" name="lead_status_id" value="{{ $o->id }}" data-name="{{ $o->name }}" @checked(old('lead_status_id') == $o->id)><span>{{ $o->name }}</span></label>
+          @endforeach
+        </div>
         <label for="outcome">What did the student say? *</label>
         <input id="outcome" name="outcome" value="{{ old('outcome') }}" required maxlength="255" placeholder="e.g. Interested, wants fee details">
-        <label for="advice">Advice or suggestion given</label>
-        <textarea id="advice" name="advice">{{ old('advice') }}</textarea>
+        <label for="advice">Suggestion given</label>
+        <textarea id="advice" name="advice" rows="2" class="!min-h-0">{{ old('advice') }}</textarea>
         <label for="remarks">Remarks</label>
-        <textarea id="remarks" name="remarks">{{ old('remarks') }}</textarea>
+        <textarea id="remarks" name="remarks" rows="2" class="!min-h-0">{{ old('remarks') }}</textarea>
         <div class="row">
-          <div><label>New status</label><select name="lead_status_id"><option value="">No change</option>
-            @foreach ($lists['statuses'] as $o)<option value="{{ $o->id }}" @selected(old('lead_status_id') == $o->id)>{{ $o->name }}</option>@endforeach</select></div>
-          <div><label>Priority</label><select name="priority">
+          <div class="!min-w-[230px]"><label for="next_follow_up_at">Next follow-up</label><input id="next_follow_up_at" type="datetime-local" name="next_follow_up_at" value="{{ old('next_follow_up_at') }}">
+            <div class="quickdates"><button type="button" data-days="1">Tomorrow</button><button type="button" data-days="3">In 3 days</button><button type="button" data-days="7">Next week</button></div></div>
+          <div><label for="priority">Priority</label><select id="priority" name="priority">
             @foreach ($lists['priorities'] as $o)<option value="{{ $o->value }}" @selected(old('priority', $student->priority?->value) === $o->value)>{{ $o->label() }}</option>@endforeach</select></div>
-          <div><label>Next follow-up</label><input type="datetime-local" name="next_follow_up_at" value="{{ old('next_follow_up_at') }}"></div>
         </div>
         @if ($student->callEntries->isNotEmpty())
-          <label>This corrects an earlier entry (optional)</label>
-          <select name="corrects_call_entry_id"><option value="">No, this is a new call</option>
-            @foreach ($student->callEntries as $c)<option value="{{ $c->id }}">{{ $c->called_at->format('j M Y, g:i A') }} · {{ \Illuminate\Support\Str::limit($c->outcome, 50) }}</option>@endforeach</select>
+          <details class="mt-4"><summary class="text-sm">Correcting an earlier entry?</summary>
+            <select name="corrects_call_entry_id" class="mt-2" aria-label="Entry being corrected"><option value="">No, this is a new call</option>
+              @foreach ($student->callEntries as $c)<option value="{{ $c->id }}">{{ $c->called_at->format('j M Y, g:i A') }} · {{ \Illuminate\Support\Str::limit($c->outcome, 50) }}</option>@endforeach</select>
+          </details>
         @endif
-        <p><button class="btn">Save call</button> <span class="small muted">Saved calls cannot be edited or deleted.</span></p>
+        <button class="btn w-full !h-12 !text-base mt-5">@include('partials.icon', ['name' => 'check'])Save call</button>
       </form>
     </div>
     @endcan
 
     <div class="card">
-      <h2>Call history ({{ $student->callEntries->count() }})</h2>
+      <div class="card-head"><h2>Call history ({{ $student->callEntries->count() }})</h2><span class="locked ml-auto">@include('partials.icon', ['name' => 'lock'])Read only</span></div>
       @if ($student->callEntries->isEmpty())<p class="muted">No calls yet.</p>@endif
       <ul class="timeline">
         @foreach ($student->callEntries as $c)
@@ -64,10 +71,12 @@
               @if ($c->status) · status set to {{ $c->status->name }}@endif
               @if ($c->corrects_call_entry_id) · <b>correction</b> of the entry from {{ $student->callEntries->firstWhere('id', $c->corrects_call_entry_id)?->called_at->format('j M, g:i A') }}@endif
             </div>
+            <div class="entry">
             <div><b>{{ $c->outcome }}</b></div>
-            @if ($c->advice)<div><span class="muted">Advice:</span> {{ $c->advice }}</div>@endif
-            @if ($c->remarks)<div><span class="muted">Remarks:</span> {{ $c->remarks }}</div>@endif
+            @if ($c->advice)<div class="text-sm"><span class="muted">Suggestion:</span> {{ $c->advice }}</div>@endif
+            @if ($c->remarks)<div class="text-sm"><span class="muted">Remarks:</span> {{ $c->remarks }}</div>@endif
             @if ($c->next_follow_up_at)<div class="small muted">Next follow-up set: {{ $c->next_follow_up_at->format('j M Y, g:i A') }}</div>@endif
+            </div>
           </li>
         @endforeach
       </ul>
@@ -78,12 +87,12 @@
     @can('assign', $student)
     <div class="card">
       <h2>Assign</h2>
-      <form method="post" action="{{ route('students.assign', $student) }}" class="row" style="align-items:end">
+      <form method="post" action="{{ route('students.assign', $student) }}" class="row items-end">
         @csrf
         <div><select name="user_id" aria-label="Assign to">
           @can('admin')<option value="">Unassigned</option>@endcan
           @foreach ($lists['assignable'] as $o)<option value="{{ $o->id }}" @selected($student->assigned_user_id === $o->id)>{{ $o->name }}</option>@endforeach</select></div>
-        <div style="flex:0"><button class="btn">Assign</button></div>
+        <div class="!flex-none"><button class="btn green">Assign</button></div>
       </form>
     </div>
     @endcan
@@ -101,7 +110,7 @@
         <dt>Added</dt><dd>{{ $student->created_at->format('j M Y') }}</dd>
       </dl>
       @can('editDetails', $student)
-      <details style="margin-top:10px"><summary>Edit details</summary>
+      <details class="mt-4"><summary>Edit details</summary>
         <form method="post" action="{{ route('students.update', $student) }}">
           @csrf @method('put')
           <label>Name</label><input name="name" value="{{ old('name', $student->name) }}" required>
@@ -123,7 +132,7 @@
             <div><label>Admission year</label><input name="admission_year" type="number" value="{{ old('admission_year', $student->admission_year) }}"></div>
           </div>
           <label>Remarks</label><textarea name="remarks">{{ old('remarks', $student->remarks) }}</textarea>
-          <p><button class="btn">Save details</button></p>
+          <p class="mt-4 mb-0"><button class="btn green">Save details</button></p>
         </form>
       </details>
       @endcan
@@ -132,7 +141,7 @@
     <div class="card">
       <h2>Enquiries ({{ $student->enquiries->count() }})</h2>
       @foreach ($student->enquiries as $e)
-        <div class="small" style="padding:4px 0;border-bottom:1px solid var(--line)">
+        <div class="small py-2.5 border-b border-line last:border-0">
           <b>{{ $e->source->name }}</b> · {{ $e->collected_on->format('j M Y') }} · {{ ucfirst($e->channel) }}
           <div class="muted">{{ collect([$e->course_text, $e->exam_text, $e->city_state_text, $e->source_page])->filter()->join(' · ') }}</div>
         </div>
@@ -156,4 +165,20 @@
     @endcan
   </div>
 </div>
+<script>
+(function () {
+  var f = document.querySelector('[data-callform]'); if (!f) return;
+  var out = f.querySelector('#outcome'), when = f.querySelector('#next_follow_up_at');
+  f.querySelectorAll('input[name=lead_status_id]').forEach(function (r) {
+    r.addEventListener('change', function () { if (r.dataset.name && !out.value.trim()) out.value = r.dataset.name; });
+  });
+  f.querySelectorAll('[data-days]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var d = new Date(); d.setDate(d.getDate() + +b.dataset.days); d.setHours(11, 0, 0, 0);
+      var p = function (n) { return String(n).padStart(2, '0'); };
+      when.value = d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T11:00';
+    });
+  });
+})();
+</script>
 @endsection

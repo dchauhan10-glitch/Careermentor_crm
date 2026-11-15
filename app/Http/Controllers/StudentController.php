@@ -28,13 +28,26 @@ class StudentController extends Controller
 
         $q = \App\Services\StudentSearch::query($user, $f)->with(['status', 'assignedUser', 'course', 'firstSource']);
 
-        $students = $q->orderByRaw('next_follow_up_at is null')->orderBy('next_follow_up_at')->orderByDesc('id')
-            ->paginate(config('crm.per_page'))->withQueryString();
+        $dir = ($f['dir'] ?? 'asc') === 'desc' ? 'desc' : 'asc';
+        match ($f['sort'] ?? null) {
+            'name' => $q->orderBy('name', $dir),
+            'status' => $q->orderBy(\App\Models\LeadStatus::select('sort_order')->whereColumn('lead_statuses.id', 'students.lead_status_id'), $dir),
+            'added' => $q->orderBy('created_at', $dir),
+            'assigned' => $q->orderBy(User::select('name')->whereColumn('users.id', 'students.assigned_user_id'), $dir),
+            'follow' => $q->orderByRaw('next_follow_up_at is null')->orderBy('next_follow_up_at', $dir),
+            default => $q->orderByRaw('next_follow_up_at is null')->orderBy('next_follow_up_at'),
+        };
+        $students = $q->orderByDesc('id')->paginate(config('crm.per_page'))->withQueryString();
+
+        $quickCounts = collect(\App\Services\StudentSearch::QUICK)->map(
+            fn ($label, $key) => \App\Services\StudentSearch::query($user, ['quick' => $key])->count()
+        );
 
         return view('students.index', [
             'students' => $students,
             'filters' => $f,
             'lists' => $this->lists($user),
+            'quickCounts' => $quickCounts,
         ]);
     }
 
